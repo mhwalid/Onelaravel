@@ -28,7 +28,7 @@ return [
     "CATEGORIE en" => 'en Offer category',
     'operation' => 'operation',
     "update" => "update",
-    "Edit" => "modifer",
+    "Edit" => "Edite",
 
 
 

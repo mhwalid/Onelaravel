@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\VideoViwer;
 use App\Http\Requests\offerRequest;
 use Illuminate\Http\Request;
 use App\Models\Offer;
+use App\Models\video;
+use App\Traits\OfferTrait;
 use Illuminate\Support\Facades\Validator;
 use LaravelLocalization;
 
@@ -28,7 +31,7 @@ class CrudController extends Controller
             'cato_' . LaravelLocalization::getCurrentLocale() . ' as cato',
             'price',
             'name_' . LaravelLocalization::getCurrentLocale() . ' as name',
-
+            'photo'
         )->get();
         return view('offers.all', compact('offers'));
     }
@@ -47,6 +50,8 @@ class CrudController extends Controller
     {
         return view('offers.create');
     }
+
+    use OfferTrait;
     public function store(offerRequest $req)
     {
         //validation 
@@ -59,14 +64,9 @@ class CrudController extends Controller
             return redirect()->back()->withErrors($validator)->withInputs($req->all());
         }
           */
-        //save photo in folder
-        $file_extension = $req->photo->getclientOriginalExtension();
-        $file_name = time() . '.' . $file_extension;
-        $path = 'images/offers';
-        $req->photo->move($path, $file_name);
 
 
-
+        $file_name = $this->SaveImage($req->photo, 'images/offers');
 
         //insert
         Offer::create([
@@ -101,7 +101,12 @@ class CrudController extends Controller
 
         ];
     } */
-
+    public function getVideo()
+    {
+        $video = video::first();
+        event(new VideoViwer($video));
+        return view('video')->with('video', $video);
+    }
 
     public function editOffer($offer_id)
     {
@@ -111,6 +116,16 @@ class CrudController extends Controller
             return redirect()->back();
         $offer = Offer::select('id', 'name_fr', 'name_en', 'cato_fr', 'cato_en', 'price')->find($offer_id);
         return view('offers.edit', compact('offer'));
+    }
+    public function delete($offer_id)
+    {
+        //  Offer::findOrFail($offer_id); // siil trouve pas 404
+        $offer = Offer::find($offer_id);
+        if (!$offer) {
+            return redirect()->back()->with(['error' => 'not existe']);
+        }
+        $offer->delete();
+        return redirect()->route('offers.all')->with(['success' => 'delete succesfuly']);
     }
 
     public function updateOffer(offerRequest $req, $offer_id)

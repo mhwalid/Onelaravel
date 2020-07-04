@@ -12,7 +12,9 @@
 */
 
 
-
+/*
 Route::get('/admin', function () {
     return 'ya halla';
 });
+
+*/

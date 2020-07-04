@@ -82,14 +82,26 @@
                 </li>
             @endforeach
 
-
-        </ul>
+           
+       
         <form class="form-inline my-2 my-lg-0">
             <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
     </div>
 </nav>
+
+@if(Session::has('success'))
+<div class="alert alert-success" role="alert">
+   {{ Session::get('success') }}
+</div>
+@endif
+
+@if(Session::has('error'))
+     <div class="alert alert-danger">
+         {{Session::get('error')}}
+     </div>
+@endif
 
 <table class="table">
     <thead>
@@ -98,6 +110,7 @@
         <th scope="col">{{__('message.Name')}}</th>
         <th scope="col">{{__('message.PRICE')}}</th>
         <th scope="col">{{__('message.CATEGORIE')}}</th>
+        <th scope="col">{{__('photo')}}</th>
         <th scope="col">{{__('message.operation')}}</th>
     </tr>
     </thead>
@@ -109,13 +122,14 @@
         <td>{{$offer -> name}}</td>
         <td>{{$offer -> price}}</td>
         <td>{{$offer -> cato}}</td>
-    <td><a href="{{url('offers/edit/'.$offer -> id)}}" class="btn btn-primary" "> {{__('message.update')}}</a></button></td>
+        <td><img  style="width: 90px; height: 90px;" src="{{asset('images/offers/'.$offer->photo)}}"></td>
+    <td><a href="{{url('offers/edit/'.$offer -> id)}}" class="btn btn-primary" "> {{__('message.update')}}</a></button>
+    <a href="{{route('offers.delete',$offer -> id)}}" class="btn btn-danger" "> {{__('message.delete')}}</a></button></td>
       
     </tr>
 @endforeach
-
-
     </tbody>
+
 </table>
 </body>
 </html>
